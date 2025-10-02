@@ -64,7 +64,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/jim-ww/jwtauth"
+	"github.com/jim-ww/jwtauth/v6"
 )
 
 var tokenAuth *jwtauth.JWTAuth

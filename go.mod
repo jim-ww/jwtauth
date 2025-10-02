@@ -1,4 +1,4 @@
-module github.com/jim-ww/jwtauth
+module github.com/jim-ww/jwtauth/v6
 
 go 1.23.0
 
