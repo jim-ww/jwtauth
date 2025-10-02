@@ -61,21 +61,20 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/jwtauth/v5"
-	"github.com/lestrrat-go/jwx/v2/jwt"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/jim-ww/jwtauth"
 )
 
 var tokenAuth *jwtauth.JWTAuth
 
 func init() {
-	tokenAuth = jwtauth.New("HS256", []byte("secret"), nil, jwt.WithAcceptableSkew(30*time.Second))
+	tokenAuth = jwtauth.New(jwt.SigningMethodHS256, []byte("secret"))
 
 	// For debugging/example purposes, we generate and print
 	// a sample jwt token with claims `user_id:123` here:
-	_, tokenString, _ := tokenAuth.Encode(map[string]interface{}{"user_id": 123})
+	_, tokenString, _ := tokenAuth.Encode(jwt.MapClaims{"user_id": 123})
 	fmt.Printf("DEBUG: a sample jwt is %s\n\n", tokenString)
 }
 
@@ -91,13 +90,13 @@ func router() http.Handler {
 	// Protected routes
 	r.Group(func(r chi.Router) {
 		// Seek, verify and validate JWT tokens
-		r.Use(jwtauth.Verifier(tokenAuth))
+		r.Use(tokenAuth.Verifier())
 
 		// Handle valid / invalid tokens. In this example, we use
 		// the provided authenticator middleware, but you can write your
 		// own very easily, look at the Authenticator method in jwtauth.go
 		// and tweak it, its not scary.
-		r.Use(jwtauth.Authenticator(tokenAuth))
+		r.Use(tokenAuth.Authenticator())
 
 		r.Get("/admin", func(w http.ResponseWriter, r *http.Request) {
 			_, claims, _ := jwtauth.FromContext(r.Context())
